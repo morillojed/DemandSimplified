@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" th:href="@{/library/bootstrap.min.css}"/>
+  <link rel="stylesheet" th:href="@{/library/dataTables.bootstrap.min.css}"/>
+  <link rel="stylesheet" th:href="@{/library/toastr.min.css}"/>
+  <link rel="stylesheet" th:href="@{/library/bootstrap-select.min.css}"/>
+  <link rel="stylesheet" th:href="@{/library/bootstrap-datepicker.min.css}"/>
+
+  <!-- Favicons -->
+
+  <link rel="icon" th:href="@{/assets/img/favicon.png}"/>
+  <link rel="apple-touch-icon" th:href="@{/assets/img/apple-touch-icon.png}"/>
+
+  <!-- Google Fonts -->
+  <!--  <link rel="stylesheet" th:href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Roboto:100,300,400,500,700|Philosopher:400,400i,700,700i"/>-->
+
+  <!-- Vendor CSS Files -->
+  <link rel="stylesheet" th:href="@{/assets/css/font-awesome.min.css}"/>
+  <link rel="stylesheet" th:href="@{/assets/css/modal-video.min.css}"/>
+  <link rel="stylesheet" th:href="@{/assets/css/owl.carousel.min.css}"/>
+  <link rel="stylesheet" th:href="@{/assets/css/aos.css}"/>
+
+  <!-- Template Main CSS File -->
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}"/>
+
+  <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
+
+  <!-- Template Main JS File -->
+  <script language="JavaScript" type="text/javascript" th:src="@{/library/jquery-3.5.1.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/library/dataTables.bootstrap.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/library/jquery.dataTable.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/library/popper.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/library/bootstrap.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/library/toastr.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/library/bootstrap-select.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/library/bootstrap-datepicker.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/assets/js/jquery.easing.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/assets/js/modal-video.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/assets/js/owl.carousel.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/assets/js/superfish.min.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/assets/js/hoverIntent.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/assets/js/aos.js}"></script>
+  <script language="JavaScript" type="text/javascript" th:src="@{/assets/main.js}"></script>
+  <script type="text/javascript" th:src="@{/js/homePage.js}"></script>
+  <title>Sales</title>
+</head>
+<body>
+
+<!-- Modal -->
+<div class="modal fade" id="addNewSales" tabindex="-1" role="dialog" aria-labelledby="addNewSalesLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addNewSalesLabel">Add new Sales</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="fieldset">
+          <label for="select-customer">Customer</label>
+          <select id="select-customer" data-live-search="true">
+            <option value=""></option>
+            <option th:each="customer:${customersMap}" data-tokens = "${customer.value}" th:value="${customer.key}" th:text="${customer.value}"/>
+          </select>
+        </div>
+        <div class="fieldset">
+          <label for="itemSalesList">Items</label>
+          <div class="fieldset">
+            <ul id="itemSalesList"/>
+          </div>
+          <div class="fieldset">
+            <select id="select-item" th:onchange="addItemSales()" data-live-search="true">
+              <option value=""></option>
+              <option th:each="item:${itemsMap}" data-tokens = "${item.value}" th:value="${item.key}" th:text="${item.value}" />
+            </select>
+          </div>
+        </div>
+        <div class="fieldset">
+          <label for="select-driver">Driver</label>
+          <select id="select-driver" data-live-search="true">
+            <option value=""></option>
+            <option th:each="driver:${driversMap}" data-tokens = "${driver.value}" th:value="${driver.key}" th:text="${driver.value}"/>
+          </select>
+        </div>
+        <div class="fieldset">
+          <label for="deliveryAddress">Delivery Address</label>
+          <input type="text" id="deliveryAddress" name="deliveryAddress"/>
+        </div>
+        <div class="fieldset">
+          <label for="totalItemPrice">Total Item Price</label>
+          <input type="text" id="totalItemPrice" name="totalItemPrice" disabled/>
+          <button type="text" id="calculateTotal" name="calculateTotal" th:onclick="calculateTotalPrice()" class="button">Calculate</button>
+        </div>
+        <div class="fieldset">
+          <label for="deliveryFee">Delivery Fee</label>
+          <input type="text" id="deliveryFee" name="deliveryFee"/>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" th:onclick="addSales()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="assignDriver" tabindex="-1" role="dialog" aria-labelledby="assignDriverLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="assignDriverLabel">Assign Driver</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="fieldset">
+          <label for="select-sales">Sale :</label>
+          <select id="select-sales" data-live-search="true" th:onchange="getTransaction()">
+            <option value=""></option>
+            <option th:each="salesId:${salesIdList}" data-tokens = "${salesId}" th:value="${salesId}" th:text="${salesId}"/>
+          </select>
+        </div>
+        <div class="fieldset">
+          <label for="select-choosen-driver">Driver</label>
+          <select id="select-choosen-driver" data-live-search="true">
+            <option value=""></option>
+            <option th:each="driver:${driversMap}" data-tokens = "${driver.value}" th:value="${driver.key}" th:text="${driver.value}"/>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" th:onclick="addSales()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="markAsDone" tabindex="-1" role="dialog" aria-labelledby="markAsDoneLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="markAsDoneLabel">Mark As Done</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="fieldset">
+          <label for="select-done-sales">Sale :</label>
+          <select id="select-done-sales" data-live-search="true" th:onchange="getTransaction()">
+            <option value=""></option>
+            <option th:each="salesId:${salesIdList}" data-tokens = "${salesId}" th:value="${salesId}" th:text="${salesId}"/>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" th:onclick="addSales()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= Header ======= -->
+<header id="header" class="header">
+  <div class="container">
+
+    <div id="logo" class="pull-left">
+      <h1><a href="index.html"><span>demand</span>Simplified</a></h1>
+      <!-- Uncomment below if you prefer to use an image logo -->
+      <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" title="" /></a>-->
+    </div>
+
+    <nav id="nav-menu-container">
+      <ul class="nav-menu">
+        <li><a href="/">Home</a></li>
+        <li class="menu-active"><a href="/transaction">Sales</a></li>
+        <li><a href="/customer">Customer</a></li>
+        <li><a href="/driver">Driver</a></li>
+        <li><a href="/supplier">Supplier</a></li>
+        <li><a href="/item">Item</a></li>
+        <li><a href="/salesReport">Sales Report</a></li>
+        <li class="menu-has-children"><a href="">Drop Down</a>
+          <ul>
+            <li><a href="#">Drop Down 1</a></li>
+            <li><a href="#">Drop Down 3</a></li>
+            <li><a href="#">Drop Down 4</a></li>
+            <li><a href="#">Drop Down 5</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav><!-- #nav-menu-container -->
+  </div>
+</header><!-- End Header -->
+
+<!-- ======= Hero Section ======= -->
+<div style="margin-top:100px">
+    <div style="float: right">
+      <button id="add-sales-button" data-toggle="modal" data-target="#addNewSales" class="button">Add Sales</button>
+      <button id="add-driver-button" data-toggle="modal" data-target="#assignDriver" class="button">Assign Driver</button>
+      <button id="mark-done-button" data-toggle="modal" data-target="#markAsDone" class="button">Mark Sales Done</button>
+    </div>
+    <!--add sales BEGIN -->
+    <table id="sales-table" class="table table-striped table-bordered">
+
+      <thead>
+      <th >id</th>
+      <th style="width: 300px">Customer</th>
+      <th style="width: 300px">Item</th>
+      <th style="width: 300px">Driver</th>
+      <th style="width: 500px">Delivery Address</th>
+      <th style="width: 100px">Total Item Price</th>
+      <th style="width: 100px">Delivery Fee</th>
+      <th style="width: 100px">Accepted By Driver</th>
+      <th style="width: 100px">Received Date</th>
+      <th style="width: 100px">Created Date</th>
+      <th style="width: 50px">Done</th>
+      </thead>
+
+    </table>
+</div>
+
+
+</body>
+</html>
